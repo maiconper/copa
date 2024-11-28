@@ -1,5 +1,7 @@
 package com.maicon.copa.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,5 +16,9 @@ public class EquipeService {
 
     public Equipe cadastrarEquipe(Equipe equipe) {
         return equipeRepository.save(equipe);
+    }
+   
+    public List<Equipe> listarEquipes() {
+        return equipeRepository.findAll();
     }
 }

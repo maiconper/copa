@@ -31,4 +31,10 @@ public class EquipeController {
         List<Equipe> equipes = equipeService.listarEquipes();
         return ResponseEntity.ok(equipes);
     }
+    
+    @GetMapping("/restantes")
+    public ResponseEntity<List<Equipe>> listarEquipesRestantes() {
+        List<Equipe> equipesRestantes = equipeService.listarEquipesRestantes();
+        return ResponseEntity.ok(equipesRestantes);
+    }
 }

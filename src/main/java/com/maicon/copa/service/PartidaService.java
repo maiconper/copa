@@ -34,6 +34,10 @@ public class PartidaService {
         Partida partida = partidaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Partida não encontrada"));
 
+        if (placarEquipe1.equals(placarEquipe2)) {
+            throw new RuntimeException("Empates não são permitidos em eliminatórias.");
+        }
+
         partida.setPlacarEquipe1(placarEquipe1);
         partida.setPlacarEquipe2(placarEquipe2);
         return partidaRepository.save(partida);
@@ -41,6 +45,50 @@ public class PartidaService {
     
     public List<Partida> listarPartidasPorFase(String fase) {
         return partidaRepository.findByFase(fase);
+    }
+    
+    public List<Partida> avancarParaProximaFase(String faseAtual) {
+        List<Partida> partidasDaFase = partidaRepository.findByFase(faseAtual);
+
+        // Verificar se todas as partidas têm resultados registrados
+        boolean todasComResultados = partidasDaFase.stream().allMatch(
+                partida -> partida.getPlacarEquipe1() != null && partida.getPlacarEquipe2() != null
+        );
+
+        if (!todasComResultados) {
+            throw new RuntimeException("Nem todas as partidas da fase atual têm resultados registrados.");
+        }
+
+        // Determinar vencedores
+        List<Equipe> vencedores = new ArrayList<>();
+        for (Partida partida : partidasDaFase) {
+            if (partida.getPlacarEquipe1() > partida.getPlacarEquipe2()) {
+                vencedores.add(partida.getEquipe1());
+            } else {
+                vencedores.add(partida.getEquipe2());
+            }
+        }
+
+        // Gerar partidas para a próxima fase
+        String proximaFase = determinarProximaFase(faseAtual);
+        return gerarPartidas(vencedores, proximaFase);
+    }
+    
+    private String determinarProximaFase(String faseAtual) {
+        switch (faseAtual.toLowerCase()) {
+            case "oitavas":
+                return "quartas";
+            case "quartas":
+                return "semifinal";
+            case "semifinal":
+                return "final";
+            default:
+                throw new RuntimeException("Fase atual inválida para avanço.");
+        }
+    }
+    
+    public List<Partida> listarPartidasPorEquipe(Long equipeId) {
+        return partidaRepository.findPartidasPorEquipe(equipeId);
     }
     
 }

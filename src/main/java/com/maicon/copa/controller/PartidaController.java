@@ -52,4 +52,20 @@ public class PartidaController {
         List<Partida> partidas = partidaService.listarPartidasPorFase(fase);
         return ResponseEntity.ok(partidas);
     }
+    
+    @PostMapping("/avancar")
+    public ResponseEntity<List<Partida>> avancarFase(@RequestParam String faseAtual) {
+        try {
+            List<Partida> proximasPartidas = partidaService.avancarParaProximaFase(faseAtual);
+            return ResponseEntity.ok(proximasPartidas);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+    
+    @GetMapping("/historico/{equipeId}")
+    public ResponseEntity<List<Partida>> listarHistoricoPorEquipe(@PathVariable Long equipeId) {
+        List<Partida> historico = partidaService.listarPartidasPorEquipe(equipeId);
+        return ResponseEntity.ok(historico);
+    }
 }
